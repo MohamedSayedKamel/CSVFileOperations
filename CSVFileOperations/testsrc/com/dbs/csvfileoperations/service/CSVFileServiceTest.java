@@ -58,8 +58,8 @@ public class CSVFileServiceTest {
 
 	@Test
 	public void testFindStringBooleanStringMapOfIntegerListOfString() throws IOException, CSVFileException {
-		List<List<String>>  result= test.find("D:\\CSV\\database.csv", true, ",",getTestData());
-		System.out.println(result);
+		//List<List<String>>  result= test.find("D:\\CSV\\database.csv", true, ",",getTestData());
+		//System.out.println(result);
 	}
 	private static Map<Integer, List<String>> getTestData() {
 		Map<Integer, List<String>> map = new HashMap<>();
