@@ -1,15 +1,20 @@
 package com.dbs.csvfileoperations.service.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dbs.csvfileoperations.enums.CSVFileExceptionType;
 import com.dbs.csvfileoperations.enums.Column;
 import com.dbs.csvfileoperations.exception.CSVFileException;
 import com.dbs.csvfileoperations.service.CSVFileService;
@@ -20,10 +25,12 @@ public class CSVFileServiceImpl implements CSVFileService {
 	@Override
 	public List<List<String>> readFile(String path, boolean includeHeader, String separator)
 			throws CSVFileException {
-		
 		checkIsNull(path, separator);
+		checkFile(path);
 		String line;
 		List<List<String>> lines = new ArrayList<>();
+		if(lines == null || lines.isEmpty())
+			throw new IllegalArgumentException("this file is empty");
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			while ((line = br.readLine()) != null) {
 				List<String> values = Arrays.asList(line.split(separator));
@@ -32,15 +39,49 @@ public class CSVFileServiceImpl implements CSVFileService {
 			if (includeHeader == true)
 				lines.remove(0);
 		} catch (IOException e) {
-			throw new CSVFileException(e.getMessage());
+			throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
 		}
 		return lines;
 	}
 
+	private void checkFile(String path)throws CSVFileException {
+		// extension csv 
+		String extension = getFileExtension(path);
+		if(!(extension.equalsIgnoreCase(".csv")))
+			throw new CSVFileException(CSVFileExceptionType.CSV_TYPE, " this file not CSV ");
+		// file not found
+		if (Files.notExists(Paths.get(path), LinkOption.NOFOLLOW_LINKS) == true)
+			throw new CSVFileException(CSVFileExceptionType.FILE_NOT_FOUND, " this file not in folder ");
+		//file not read
+		if(fileCanRead(path) == false)
+			throw new CSVFileException(CSVFileExceptionType.FILE_NOT_READ, " this file not readable ");
+	}
+
+	private boolean fileCanRead(String path) {
+
+		File file = new File(path);
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return file.canRead();
+	}
+	private String getFileExtension(String path) throws CSVFileException {
+		String extension = "";
+
+		if (path.contains("."))
+		     extension = path.substring(path.lastIndexOf("."));
+		else
+			throw new CSVFileException(CSVFileExceptionType.PATH_ERORR, "there is file extension");
+		return extension;
+	}
+
 	private void checkIsNull(String path, String separator) {
-		if (path.trim() == null || path.trim().isEmpty()) 
+		if (path == null ||path.trim() == null || path.trim().isEmpty()) 
 			throw new IllegalArgumentException("path is null please add correct path");
-		if (separator.trim() == null || separator.trim().isEmpty()) 
+		if (separator  == null ||separator.trim() == null || separator.trim().isEmpty()) 
 			throw new IllegalArgumentException("separator is null please checking it ");
 	}
 
@@ -77,7 +118,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 			writer.append("\n");
 			writer.close();
 		} catch (IOException e) {
-			throw new CSVFileException(e.getMessage());
+			throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
 		}
 		
 	}
@@ -100,7 +141,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 					writer.append("\n");
 					writer.close();
 				} catch (IOException e) {
-					new CSVFileException(e.getMessage());
+					new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
 				}
 				
 			}

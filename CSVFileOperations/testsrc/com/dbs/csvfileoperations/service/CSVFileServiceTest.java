@@ -13,18 +13,21 @@ import com.dbs.csvfileoperations.exception.CSVFileException;
 import com.dbs.csvfileoperations.service.impl.CSVFileServiceImpl;
 
 public class CSVFileServiceTest {
-	CSVFileService test  = new CSVFileServiceImpl();
+	private static final CSVFileService service  = new CSVFileServiceImpl();
 
 	@Test
 	public void testReadFile() throws IOException, CSVFileException {
-//		List<List<String>> readFile = test.readFile("D:\\CSV\\database.csv", true, ",");
-		//List<List<String>> readFile = test.readFile("D:\\CSV\\database.csv", true, ",");
+//		List<List<String>> readFile = service.readFile("D:\\CSV\\database.csv", true, ",");
+
+			List<List<String>> readFile = service.readFile("D:\\CSV\\database2.csv", true,  ",");
+
+	
 
 	}
 
 	@Test
 	public void testAddRecords() throws IOException, CSVFileException {
-		//test.addRecords("D:\\CSV\\database.csv", true, ",", createCsvDataComplex());
+		//service.addRecords("D:\\CSV\\database.csv", true, ",", createCsvDataComplex());
 	}
 	public static List<List<String>> createCsvDataComplex() {
 		List<List<String>> listOfLists = new ArrayList<>();
@@ -48,17 +51,17 @@ public class CSVFileServiceTest {
 
 	@Test
 	public void testAddRecord() throws IOException, CSVFileException {
-		//test.addRecord("D:\\CSV\\database.csv", true, ",", Arrays.asList("1006", "ali", "teacher", "40", "tanta"));
+		//service.addRecord("D:\\CSV\\database.csv", true, ",", Arrays.asList("1006", "ali", "teacher", "40", "tanta"));
 	}
 
 	@Test
 	public void testFindStringBooleanStringString() throws IOException, CSVFileException {
-		//test.findByKey("D:\\CSV\\database.csv", true, ",","         doctor            ");
+		//service.findByKey("D:\\CSV\\database.csv", true, ",","         doctor            ");
 	}
 
 	@Test
 	public void testFindStringBooleanStringMapOfIntegerListOfString() throws IOException, CSVFileException {
-		//List<List<String>>  result= test.find("D:\\CSV\\database.csv", true, ",",getTestData());
+		//List<List<String>>  result= service.find("D:\\CSV\\database.csv", true, ",",getTestData());
 		//System.out.println(result);
 	}
 	private static Map<Integer, List<String>> getTestData() {
