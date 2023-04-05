@@ -2,7 +2,7 @@ package com.dbs.csvfileoperations.enums;
 
 public enum CSVFileExceptionType {
 
-	GENEARL, FILE_NOT_FOUND, FILE_NOT_READ, CSV_EXTENSION, PATH_ERORR;
+	 FILE_NOT_FOUND, FILE_NOT_READ, CSV_EXTENSION, PATH_ERORR;
 
 	private String errorMessage;
 

@@ -49,12 +49,12 @@ public class CSVFileServiceTest {
 
 	@Test
 	public void testAddRecord() throws IOException, CSVFileException {
-		//service.addRecord("D:\\CSV\\database.csv", true, ",", Arrays.asList("1006", "ali", "teacher", "40", "tanta"));
+		service.addRecord("D:\\CSV\\database.csv", true, ",", Arrays.asList("1006", "ali", "teacher", "40", "tanta"));
 	}
 
 	@Test
 	public void testFindStringBooleanStringString() throws IOException, CSVFileException {
-		//service.findByKey("D:\\CSV\\database.csv", true, ",","         doctor            ");
+		service.findByKey("D:\\CSV\\database.csv", true, ",","         doctor            ");
 	}
 
 	@Test

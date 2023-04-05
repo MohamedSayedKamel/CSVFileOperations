@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.management.AttributeNotFoundException;
+
 import com.dbs.csvfileoperations.enums.CSVFileExceptionType;
 import com.dbs.csvfileoperations.enums.Column;
 import com.dbs.csvfileoperations.exception.CSVFileException;
@@ -28,8 +31,6 @@ public class CSVFileServiceImpl implements CSVFileService {
 		checkFile(path);
 		String line;
 		List<List<String>> lines = new ArrayList<>();
-		if(lines == null || lines.isEmpty())
-			throw new IllegalArgumentException("this file is empty");
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			while ((line = br.readLine()) != null) {
 				List<String> values = Arrays.asList(line.split(separator));
@@ -38,13 +39,14 @@ public class CSVFileServiceImpl implements CSVFileService {
 			if (includeHeader == true)
 				lines.remove(0);
 		} catch (IOException e) {
-			throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+			//throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+			e.printStackTrace();
 		}
 		return lines;
 	}
 
 	private void checkFile(String path)throws CSVFileException {
-		// extension csv 
+		// extension .csv 
 		String extension = getFileExtension(path);
 		if(!(extension.equalsIgnoreCase(".csv")))
 			throw new CSVFileException(CSVFileExceptionType.CSV_EXTENSION, " this file not CSV ");
@@ -75,7 +77,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 	}
 
 	private void checkIsNull(String path, String separator) {
-		if (path == null ||path.trim() == null || path.trim().isEmpty()) 
+		if (path == null || path.trim() == null || path.trim().isEmpty()) 
 			throw new IllegalArgumentException("path is null please add correct path");
 		if (separator  == null ||separator.trim() == null || separator.trim().isEmpty()) 
 			throw new IllegalArgumentException("separator is null please checking it ");
@@ -107,15 +109,16 @@ public class CSVFileServiceImpl implements CSVFileService {
 					}
 					writer.write(columns.keySet().toString().substring(1, columns.keySet().toString().length() - 1));
 					writer.append("\n");
-			
 			}
 			if(record == null || record.isEmpty()) 
 				throw new IllegalArgumentException("please enter valid list");
+	
 			writer.write(getLineData(record, separator));
 			writer.append("\n");
 			writer.close();
 		} catch (IOException e) {
-			throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+			//throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+			e.getMessage();
 		}
 	}
 	
@@ -138,7 +141,8 @@ public class CSVFileServiceImpl implements CSVFileService {
 					writer.append("\n");
 					writer.close();
 				} catch (IOException e) {
-					new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+					//new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
+					e.getMessage();
 				}
 			}
 		}
@@ -148,19 +152,16 @@ public class CSVFileServiceImpl implements CSVFileService {
 	public void findByKey(String path, boolean includeHeader, String separator, String key)
 			throws CSVFileException {
 		checkIsNull(path, separator);
-		if(key == null ||key.trim() == null || key.trim().isEmpty())
+		if (key == null || key.trim() == null || key.trim().isEmpty())
 			throw new IllegalArgumentException("please enter valid key");
-		List<List<String>> listOfList = readFile( path,  includeHeader,  separator);
+		List<List<String>> listOfList = readFile(path, includeHeader, separator);
 		checkEmptyFile(listOfList);
-		try {
-			for (List<String> line : listOfList) {
-				if (line.contains(key.trim())) 
-					System.out.println(line);
-			}
-		}catch (IllegalArgumentException e) {
-			e.getMessage();
+		for (List<String> line : listOfList) {
+			if (line.contains(key.trim()))
+				System.out.println(line);
+			else
+				throw new IllegalArgumentException("key not found"); 
 		}
-		
 	}
 
 	private void checkEmptyFile(List<List<String>> listOfList) {
