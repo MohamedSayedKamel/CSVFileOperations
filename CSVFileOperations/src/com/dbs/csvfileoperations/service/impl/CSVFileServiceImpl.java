@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.dbs.csvfileoperations.enums.CSVFileExceptionType;
 import com.dbs.csvfileoperations.enums.Column;
 import com.dbs.csvfileoperations.exception.CSVFileException;
@@ -48,7 +47,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 		// extension csv 
 		String extension = getFileExtension(path);
 		if(!(extension.equalsIgnoreCase(".csv")))
-			throw new CSVFileException(CSVFileExceptionType.CSV_TYPE, " this file not CSV ");
+			throw new CSVFileException(CSVFileExceptionType.CSV_EXTENSION, " this file not CSV ");
 		// file not found
 		if (Files.notExists(Paths.get(path), LinkOption.NOFOLLOW_LINKS) == true)
 			throw new CSVFileException(CSVFileExceptionType.FILE_NOT_FOUND, " this file not in folder ");
@@ -58,19 +57,16 @@ public class CSVFileServiceImpl implements CSVFileService {
 	}
 
 	private boolean fileCanRead(String path) {
-
 		File file = new File(path);
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return file.canRead();
 	}
 	private String getFileExtension(String path) throws CSVFileException {
 		String extension = "";
-
 		if (path.contains("."))
 		     extension = path.substring(path.lastIndexOf("."));
 		else
@@ -102,6 +98,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 		try {
 			writer = new FileWriter(path, true);
 			List<List<String>> listOfList = readFile( path,  includeHeader,  separator);
+			checkEmptyFile(listOfList);
 			if (listOfList.size() == 1 && includeHeader == false) {
 					Map<String, List<String>> columns = new LinkedHashMap<>();
 					// initialize the map
@@ -120,7 +117,6 @@ public class CSVFileServiceImpl implements CSVFileService {
 		} catch (IOException e) {
 			throw new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
 		}
-		
 	}
 	
 	@Override
@@ -128,6 +124,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 			throws  CSVFileException {
 		checkIsNull(path, separator);
 		List<List<String>> listOfList = readFile( path,  includeHeader,  separator);
+		checkEmptyFile(listOfList);
 		if (listOfList.size() == 1 && includeHeader == false) {
 			for (List<String> list : records) 
 				addRecord(path, includeHeader, separator, list);
@@ -143,7 +140,6 @@ public class CSVFileServiceImpl implements CSVFileService {
 				} catch (IOException e) {
 					new CSVFileException(CSVFileExceptionType.GENEARL,e.getMessage());
 				}
-				
 			}
 		}
 	}
@@ -152,9 +148,10 @@ public class CSVFileServiceImpl implements CSVFileService {
 	public void findByKey(String path, boolean includeHeader, String separator, String key)
 			throws CSVFileException {
 		checkIsNull(path, separator);
-		if(key.trim() == null || key.trim().isEmpty())
+		if(key == null ||key.trim() == null || key.trim().isEmpty())
 			throw new IllegalArgumentException("please enter valid key");
 		List<List<String>> listOfList = readFile( path,  includeHeader,  separator);
+		checkEmptyFile(listOfList);
 		try {
 			for (List<String> line : listOfList) {
 				if (line.contains(key.trim())) 
@@ -166,6 +163,11 @@ public class CSVFileServiceImpl implements CSVFileService {
 		
 	}
 
+	private void checkEmptyFile(List<List<String>> listOfList) {
+		if(listOfList == null || listOfList.isEmpty())
+			throw new IllegalArgumentException("file is empty");
+	}
+
 	@Override
 	public List<List<String>> find(String path, boolean includeHeader, String separator, Map<Integer, List<String>> map)
 			throws  CSVFileException {
@@ -173,6 +175,7 @@ public class CSVFileServiceImpl implements CSVFileService {
 		if(map == null || map.isEmpty())
 			throw new IllegalArgumentException("please checking correct search values");
 		List<List<String>> listOfList = readFile(path, includeHeader, separator);
+		checkEmptyFile(listOfList);
 		List<List<String>> results = new ArrayList<>();
 		
 		/*for (List<String> line : listOfList) {
